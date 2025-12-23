@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsc -b",
+    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "fastify": "^5.3.3",
+    "@fastify/cors": "^11.0.1",
+    "better-auth": "^1.4.7",
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.13",
+    "@ticket-concurrency-challenge/auth": "*",
+    "@ticket-concurrency-challenge/db": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "@types/node": "^22.13.11",
+    "typescript": "^5",
+    "tsdown": "^0.16.5",
+    "@ticket-concurrency-challenge/config": "*"
+  }
+}

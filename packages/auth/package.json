@@ -1,0 +1,23 @@
+{
+  "name": "@ticket-concurrency-challenge/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "devDependencies": {
+    "typescript": "^5",
+    "@ticket-concurrency-challenge/config": "*"
+  },
+  "dependencies": {
+    "better-auth": "^1.4.7",
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.13",
+    "@ticket-concurrency-challenge/db": "*"
+  }
+}
