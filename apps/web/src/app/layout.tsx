@@ -1,41 +1,30 @@
 import type { Metadata } from "next";
+import { Geist_Mono, Outfit } from "next/font/google";
+import "./globals.css";
+import { Providers } from "./providers";
 
-import { Geist, Geist_Mono } from "next/font/google";
-
-import "../index.css";
-import Header from "@/components/header";
-import Providers from "@/components/providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "ticket-concurrency-challenge",
-  description: "ticket-concurrency-challenge",
+	title: "Ticket Concurrency Challenge",
+	description: "Experience the next generation of event ticketing.",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
-          <div className="grid grid-rows-[auto_1fr] h-svh">
-            <Header />
-            {children}
-          </div>
-        </Providers>
-      </body>
-    </html>
-  );
+	return (
+		<html className={`${outfit.variable} ${geistMono.variable}`} lang="en">
+			<body className="bg-background text-foreground antialiased selection:bg-primary/20">
+				<Providers>{children}</Providers>
+			</body>
+		</html>
+	);
 }

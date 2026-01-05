@@ -1,28 +1,43 @@
 {
   "name": "server",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "src/main.ts",
   "scripts": {
     "build": "tsdown",
     "check-types": "tsc -b",
-    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js"
+    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/main.ts --outfile server",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js"
   },
   "dependencies": {
-    "fastify": "^5.3.3",
     "@fastify/cors": "^11.0.1",
-    "better-auth": "^1.4.7",
-    "dotenv": "^17.2.2",
-    "zod": "^4.1.13",
+    "@fastify/static": "^8.3.0",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/microservices": "^11.1.10",
+    "@nestjs/platform-fastify": "^11.0.1",
+    "@nestjs/platform-socket.io": "^11.1.10",
+    "@nestjs/websockets": "^11.1.10",
     "@ticket-concurrency-challenge/auth": "*",
-    "@ticket-concurrency-challenge/db": "*"
+    "@ticket-concurrency-challenge/db": "*",
+    "amqp-connection-manager": "^5.0.0",
+    "amqplib": "^0.10.9",
+    "better-auth": "^1.4.7",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
+    "dotenv": "^17.2.2",
+    "fastify": "^5.3.3",
+    "ioredis": "^5.8.2",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "socket.io": "^4.8.3",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
-    "tsx": "^4.19.2",
-    "@types/node": "^22.13.11",
-    "typescript": "^5",
+    "@ticket-concurrency-challenge/config": "*",
+    "@types/node": "^22.19.3",
     "tsdown": "^0.16.5",
-    "@ticket-concurrency-challenge/config": "*"
+    "tsx": "^4.19.2",
+    "typescript": "^5"
   }
 }

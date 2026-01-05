@@ -1,78 +1,51 @@
-# ticket-concurrency-challenge
+# 🎫 Ticket Concurrency Challenge
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Fastify, and more.
+Este repositório documenta a implementação de um **Sistema de Venda de Ingressos de Alta Demanda**, projetado para suportar picos de tráfego intensos sem degradar a experiência do usuário ou gerar inconsistência de dados (como vender o mesmo assento duas vezes).
 
-## Features
+## 📜 Contexto do Negócio
+A startup **"CrowdPass"** vai vender ingressos para a final do campeonato mundial de futebol. Espera-se que **1 milhão de usuários** tentem comprar os 50 mil ingressos disponíveis no exato momento da abertura das vendas.
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **shadcn/ui** - Reusable UI components
-- **Fastify** - Fast, low-overhead web framework
-- **Node.js** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Turborepo** - Optimized monorepo build system
-- **Oxlint** - Oxlint + Oxfmt (linting & formatting)
-- **Biome** - Linting and formatting
+O sistema atual (monolito síncrono) caiu na última venda. Sua missão é reescrever o núcleo de processamento de pedidos para ser **assíncrono, resiliente e à prova de falhas**.
 
-## Getting Started
+---
 
-First, install the dependencies:
+## 🎯 Desafios Técnicos (Core Requirements)
 
-```bash
-npm install
-```
-## Database Setup
+### 1. Idempotência (Proteção contra Duplicidade)
+Em momentos de instabilidade de rede, o usuário pode clicar no botão "Comprar" múltiplas vezes ou o app pode reenviar a requisição automaticamente.
+- **Requisito:** Implementar um mecanismo de **Idempotência** baseado em chaves (`Idempotency-Key`).
+- Se o servidor receber duas requisições com a mesma chave (mesmo payload), ele deve processar apenas a primeira e retornar o **mesmo resultado** para a segunda, sem criar duplicatas no banco ou cobrar o cartão duas vezes.
 
-This project uses PostgreSQL with Drizzle ORM.
+### 2. Arquitetura Assíncrona (RabbitMQ)
+Para não derrubar o banco de dados, a API de entrada não deve processar a compra imediatamente.
+- **Requisito:** O endpoint de compra deve apenas validar a requisição, publicar uma mensagem em uma fila de alta performance (`ticket_orders`) e retornar um `202 Accepted` imediato.
+- Um serviço de background (Worker) deve consumir essa fila em velocidade controlada (*throttling*) para efetivar a reserva.
 
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
+### 3. Feedback em Tempo Real (WebSockets)
+Como a compra é assíncrona, o usuário não pode ficar sem resposta.
+- **Requisito:** Implementar um **WebSocket Gateway**.
+- Assim que o Worker processar o pedido (seja Sucesso ou "Esgotado"), o backend deve notificar o frontend ativamente via Socket, atualizando a UI do usuário em tempo real sem necessidade de *polling*.
 
-3. Apply the schema to your database:
-```bash
-npm run db:push
-```
+### 4. Concorrência e Estoque
+- **Requisito:** Garantir que o contador de ingressos nunca fique negativo. O sistema deve lidar com *race conditions* onde múltiplos workers tentam reservar o último ingresso simultaneamente.
 
+---
 
-Then, run the development server:
+## 🛠️ Stack Tecnológica Exigida
+Este desafio deve ser implementado obrigatoriamente utilizando as seguintes tecnologias:
 
-```bash
-npm run dev
-```
+- **Framework:** [NestJS](https://nestjs.com/) (Modularidade e Injeção de Dependência).
+- **Message Broker:** [RabbitMQ](https://www.rabbitmq.com/) (Gestão de filas e Pub/Sub para eventos).
+- **Real-time:** [Socket.io](https://socket.io/) ou [ws](https://github.com/websockets/ws) (via NestJS Gateway).
+- **Cache/Lock:** [Redis](https://redis.io/) (Para controle de idempotência e contagem rápida de estoque).
+- **Banco de Dados:** PostgreSQL ou MongoDB (Persistência final).
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+## 🧪 Critérios de Aceite (Definition of Done)
+1. [x] **API Robusta:** O endpoint `POST /orders` aceita a `Idempotency-Key` e rejeita/ignora reenvios.
+2. [x] **Zero Downtime:** A API continua aceitando pedidos mesmo se o banco de dados estiver lento (fila absorve o pico).
+3. [x] **Consistência:** Testes de carga (ex: k6) não geram vendas além do estoque total.
+4. [x] **UX Fluida:** O cliente recebe a notificação via WebSocket em menos de 2 segundos após o processamento do worker.
 
+---
 
-
-
-
-
-
-## Project Structure
-
-```
-ticket-concurrency-challenge/
-├── apps/
-│   ├── web/         # Frontend application (Next.js)
-│   └── server/      # Backend API (Fastify)
-├── packages/
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `npm run dev`: Start all applications in development mode
-- `npm run build`: Build all applications
-- `npm run dev:web`: Start only the web application
-- `npm run dev:server`: Start only the server
-- `npm run check-types`: Check TypeScript types across all apps
-- `npm run db:push`: Push schema changes to database
-- `npm run db:studio`: Open database studio UI
-- `npm run check`: Run Biome formatting and linting
-- `npm run check`: Run Oxlint and Oxfmt
+> **Nota:** A arquitetura de pastas (Monorepo vs Polyrepo) e o setup inicial ficam a critério do arquiteto responsável (você).

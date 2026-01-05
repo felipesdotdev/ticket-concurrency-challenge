@@ -23,12 +23,6 @@ command = "npx"
 args = ["shadcn@latest", "mcp"]
 
 
-
-[mcp_servers.neon]
-command = "npx"
-args = ["-y", "mcp-remote@latest", "https://mcp.neon.tech/mcp"]
-
-
 [mcp_servers.better-auth]
 url = "https://mcp.chonkie.ai/better-auth/better-auth-builder/mcp"
 

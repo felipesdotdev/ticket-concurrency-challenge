@@ -16,16 +16,14 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "devDependencies": {
+    "@ticket-concurrency-challenge/config": "*",
     "drizzle-kit": "^0.31.8",
-    "@types/ws": "^8.18.1",
-    "typescript": "^5",
-    "@ticket-concurrency-challenge/config": "*"
+    "typescript": "^5"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.1",
-    "@neondatabase/serverless": "^1.0.2",
-    "ws": "^8.18.3",
     "dotenv": "^17.2.2",
+    "drizzle-orm": "^0.45.1",
+    "postgres": "^3.4.7",
     "zod": "^4.1.13"
   }
 }

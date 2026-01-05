@@ -8,6 +8,8 @@
       "@/*": ["./src/*"]
     },
     "jsx": "react-jsx",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }

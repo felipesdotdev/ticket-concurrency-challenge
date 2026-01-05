@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Test - Ticket System</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🎫 WebSocket Test</h1>
+    
+    <div id="connection-status" class="status disconnected">
+      Status: Disconnected
+    </div>
+    
+    <p>User ID: <strong>user-123</strong></p>
+    
+    <button onclick="window.connect()">Connect</button>
+    <button onclick="window.disconnect()" class="secondary">Disconnect</button>
+    
+    <h2 style="margin-top: 2rem; margin-bottom: 1rem;">Events Received:</h2>
+    <div id="events" class="events">
+      <p id="no-events" style="color: #666; text-align: center; padding: 2rem;">Waiting for events...</p>
+    </div>
+  </div>
+  <script src="/client.js"></script>
+</body>
+</html>

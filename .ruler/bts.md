@@ -8,7 +8,7 @@ This is a monorepo with the following structure:
 
 - **`apps/web/`** - Frontend application (Next.js)
 
-- **`apps/server/`** - Backend server (Fastify)
+- **`apps/server/`** - Backend server (NestJS + Fastify)
 
 - **`packages/auth/`** - Authentication logic and utilities
 - **`packages/db/`** - Database schema and utilities
