@@ -21,6 +21,10 @@ export class OrderController {
 	constructor(@Inject(OrderService) orderService: OrderService) {
 		this.orderService = orderService;
 	}
+	@Get("tickets")
+	async getTickets() {
+		return this.orderService.getTickets();
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.ACCEPTED)

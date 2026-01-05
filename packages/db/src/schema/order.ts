@@ -22,9 +22,7 @@ export const order = pgTable(
 	"order",
 	{
 		id: text("id").primaryKey(),
-		userId: text("user_id")
-			.notNull()
-			.references(() => user.id, { onDelete: "cascade" }),
+		userId: text("user_id").notNull(),
 		ticketId: text("ticket_id")
 			.notNull()
 			.references(() => ticket.id, { onDelete: "restrict" }),

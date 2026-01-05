@@ -6,7 +6,7 @@ export class CreateOrderDto {
 
 	@IsInt()
 	@IsPositive()
-	@Max(10, { message: "Cannot order more than 10 tickets at once" })
+	@Max(5, { message: "Cannot order more than 5 tickets at once" })
 	@IsOptional()
 	quantity?: number = 1;
 }

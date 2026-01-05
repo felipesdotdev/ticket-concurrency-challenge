@@ -39,3 +39,20 @@ export async function purchaseTicket({
 
 	return res.json();
 }
+
+export interface Ticket {
+	id: string;
+	name: string;
+	description: string;
+	price: number;
+	totalQuantity: number;
+	availableQuantity: number;
+}
+
+export async function getTickets(): Promise<Ticket[]> {
+	const res = await fetch(`${API_URL}/orders/tickets`);
+	if (!res.ok) {
+		throw new Error("Failed to fetch tickets");
+	}
+	return res.json();
+}

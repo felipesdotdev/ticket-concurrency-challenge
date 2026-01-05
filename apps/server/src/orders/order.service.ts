@@ -1,8 +1,8 @@
-import { randomUUID } from "node:crypto";
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
-import { type db, order } from "@ticket-concurrency-challenge/db";
+import { type db, order, ticket } from "@ticket-concurrency-challenge/db";
 import { eq } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
 import { DB_CONNECTION } from "../database/database.constants";
 import { RABBITMQ_SERVICE } from "../infrastructure/rabbitmq/rabbitmq.constants";
 import { CreateOrderDto, OrderResponseDto } from "./dto/order.dto";
@@ -74,5 +74,18 @@ export class OrderService {
 			processedAt: orderData.processedAt,
 			createdAt: orderData.createdAt,
 		};
+	}
+	async getTickets() {
+		return this.dbConnection
+			.select({
+				id: ticket.id,
+				name: ticket.name,
+				description: ticket.description,
+				price: ticket.price,
+				totalQuantity: ticket.totalQuantity,
+				availableQuantity: ticket.availableQuantity,
+			})
+			.from(ticket)
+			.orderBy(ticket.price);
 	}
 }

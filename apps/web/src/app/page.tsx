@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { purchaseTicket } from "../lib/api";
+import { getTickets, purchaseTicket } from "../lib/api";
 import { useSocket } from "../providers/socket-provider";
 
 /**
@@ -29,26 +29,14 @@ import { useSocket } from "../providers/socket-provider";
  * - Traduzido para Português do Brasil.
  */
 
-const TIERS = [
+// Tiers will be fetched from API
+const TIERS_SKELETON = [
 	{
-		id: "ticket-standard",
-		name: "Arquibancada Superior",
-		price: 490,
-		desc: "Visão panorâmica do campo e torcida.",
-		features: ["Assento Numerado", "Acesso aos Bares", "Telão Gigante"],
-	},
-	{
-		id: "ticket-vip",
-		name: "Camarote Lounge VIP",
-		price: 1500,
-		desc: "Experiência premium com open bar.",
-		features: [
-			"Open Bar & Food",
-			"Estacionamento VIP",
-			"Kit Torcedor",
-			"Acesso Exclusivo",
-		],
-		new: true,
+		id: "skeleton-1",
+		name: "Carregando...",
+		price: 0,
+		desc: "Buscando ingressos...",
+		features: [],
 	},
 ];
 
@@ -79,9 +67,10 @@ const STEP_ORDER = {
 export default function App() {
 	// System State
 	const { lastEvent, userId } = useSocket();
-	const [selectedTier, setSelectedTier] = useState("ticket-vip");
+	const [tiers, setTiers] = useState<any[]>(TIERS_SKELETON);
+	const [selectedTier, setSelectedTier] = useState<string | null>(null);
 	const [quantity, setQuantity] = useState(1);
-	const [stock, setStock] = useState(0); // Start with 0, wait for server update
+	const [stock, setStock] = useState(0);
 	const [logs, setLogs] = useState<
 		{ id: number; text: string; time: string }[]
 	>([]);
@@ -110,6 +99,27 @@ export default function App() {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
+	// Initial Data Fetch
+	useEffect(() => {
+		getTickets()
+			.then((data) => {
+				const formatted = data.map((t) => ({
+					id: t.id,
+					name: t.name,
+					price: t.price / 100,
+					desc: t.description,
+					features: ["Ingresso Oficial", "Acesso Garantido"],
+					availableQuantity: t.availableQuantity,
+				}));
+				setTiers(formatted);
+				if (formatted.length > 0) {
+					setSelectedTier(formatted[0].id);
+					setStock(formatted[0].availableQuantity);
+				}
+			})
+			.catch((err) => console.error("Failed to fetch tickets", err));
+	}, []);
+
 	// Ticker Rotation
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -122,47 +132,85 @@ export default function App() {
 	// Real-time Ticket Updates
 	useEffect(() => {
 		if (lastEvent?.type === "TICKET_UPDATE") {
-			const { ticketId, quantity: newQuantity } = lastEvent.data;
-			// Atualiza apenas se for o tier selecionado ou se quisermos mostrar todos
+			const { ticketId, availableQuantity: newQuantity } = lastEvent.data;
+
+			// Add to logs
+			setLogs((prev) =>
+				[
+					{
+						id: Date.now(),
+						text: `Nova compra detectada! Restam ${newQuantity} unidades.`,
+						time: new Date().toLocaleTimeString(),
+					},
+					...prev,
+				].slice(0, 5)
+			);
+
+			// Update local state for immediate feedback
+			setTiers((prev) =>
+				prev.map((t) =>
+					t.id === ticketId ? { ...t, availableQuantity: newQuantity } : t
+				)
+			);
+
+			// Update large stock number if it's the selected tier
 			if (ticketId === selectedTier) {
 				setStock(newQuantity);
+				// Auto-adjust quantity if it exceeds new stock
+				if (quantity > newQuantity) {
+					setQuantity(Math.max(1, newQuantity));
+				}
 			}
 		}
-	}, [lastEvent, selectedTier]);
+	}, [lastEvent, selectedTier, quantity]);
+
+	// Update stock when selection changes
+	useEffect(() => {
+		if (selectedTier) {
+			const t = tiers.find((tier) => tier.id === selectedTier);
+			if (t && typeof t.availableQuantity === "number") {
+				setStock(t.availableQuantity);
+			}
+		}
+	}, [selectedTier, tiers]);
 
 	// Real-time Order Updates
+	// Real-time Order Updates - Action Handler
 	useEffect(() => {
-		if (lastEvent?.type !== "ORDER_UPDATE") return;
+		if (lastEvent?.type === "ORDER_UPDATE" && currentOrderId) {
+			const { orderId, status, message } = lastEvent.data;
 
-		const { orderId, status, message } = lastEvent.data;
-
-		// Add to logs
-		setLogs((prev) =>
-			[
-				{
-					id: Date.now(),
-					text: message,
-					time: new Date().toLocaleTimeString(),
-				},
-				...prev,
-			].slice(0, 5)
-		);
-
-		// If this is OUR order
-		if (currentOrderId && orderId === currentOrderId) {
-			if (status === "COMPLETED") {
-				navigateTo("success");
-			} else {
-				toast.error(`Falha: ${message}`);
-				closeModal();
+			if (orderId === currentOrderId) {
+				if (status === "COMPLETED") {
+					navigateTo("success");
+					toast.custom(
+						(t) => (
+							<div className="flex w-[350px] items-center gap-4 rounded-2xl border border-white/20 bg-white/80 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl">
+								<div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#34C759] text-white shadow-sm">
+									<Check className="h-5 w-5" />
+								</div>
+								<div>
+									<h4 className="font-semibold text-[#1d1d1f] text-sm tracking-tight">
+										Pedido Confirmado
+									</h4>
+									<p className="text-[#86868b] text-xs">
+										Seus ingressos estão garantidos.
+									</p>
+								</div>
+							</div>
+						),
+						{ duration: 5000, position: "top-right" }
+					);
+				} else {
+					toast.error(`Falha: ${message}`);
+					closeModal();
+				}
+				setCurrentOrderId(null);
 			}
-			setCurrentOrderId(null); // Reset
 		}
 	}, [lastEvent, currentOrderId]);
 
-	// Initial Stock Fetch (Wait for broadcast)
-
-	const currentTierData = TIERS.find((t) => t.id === selectedTier);
+	const currentTierData = tiers.find((t) => t.id === selectedTier);
 	const totalPrice = (currentTierData?.price || 0) * quantity;
 
 	// Navigation Helper
@@ -188,6 +236,7 @@ export default function App() {
 	};
 
 	const handleConfirmPayment = async () => {
+		if (!selectedTier) return;
 		navigateTo("processing");
 
 		try {
@@ -346,7 +395,7 @@ export default function App() {
 				>
 					<motion.div
 						animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
-						className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop')] bg-center bg-cover opacity-80"
+						className="absolute inset-0 bg-[url('https://assets.goal.com/images/v3/bltae7f8664e38023a5/FLAYboiXEAgk65d.jpeg?auto=webp&format=pjpg&width=1080&quality=60')] bg-center bg-cover opacity-20"
 						transition={{
 							duration: 30,
 							repeat: Number.POSITIVE_INFINITY,
@@ -430,7 +479,7 @@ export default function App() {
 					{/* RIGHT: Selection */}
 					<div className="space-y-8">
 						<div className="space-y-4">
-							{TIERS.map((tier) => (
+							{tiers.map((tier) => (
 								<div
 									className={`relative flex cursor-pointer items-center justify-between overflow-hidden rounded-[18px] border-2 p-6 transition-all duration-300 ${selectedTier === tier.id ? "border-[#0071E3] bg-white shadow-sm" : "border-[#d2d2d7] bg-white hover:border-[#86868b]"}
                   `}
@@ -442,11 +491,11 @@ export default function App() {
 											<span className="font-semibold text-[#1d1d1f] text-[17px] tracking-tight">
 												{tier.name}
 											</span>
-											{tier.new && (
+											{/* {tier.new && (
 												<span className="rounded bg-[#fff0e6] px-1.5 py-0.5 font-medium text-[#bf4800] text-[10px]">
 													Novo
 												</span>
-											)}
+											)} */}
 										</div>
 										<p className="text-[#86868b] text-[12px]">{tier.desc}</p>
 									</div>
@@ -478,8 +527,11 @@ export default function App() {
 										{quantity}
 									</span>
 									<button
-										className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-[#F5F5F7]"
-										onClick={() => setQuantity(Math.min(5, quantity + 1))}
+										className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-[#F5F5F7] disabled:opacity-50"
+										disabled={quantity >= stock || quantity >= 5}
+										onClick={() =>
+											setQuantity(Math.min(stock, 5, quantity + 1))
+										}
 									>
 										<Plus className="h-4 w-4" />
 									</button>

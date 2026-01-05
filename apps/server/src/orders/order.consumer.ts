@@ -50,8 +50,8 @@ export class OrderConsumer {
 				totalPrice: result.totalPrice,
 				message:
 					result.status === "COMPLETED"
-						? "Your order has been confirmed!"
-						: `Order failed: ${result.error}`,
+						? "Seu pedido foi confirmado!"
+						: `Falha no pedido: ${result.error}`,
 			});
 		} catch (error: any) {
 			this.logger.error(
@@ -159,10 +159,27 @@ export class OrderConsumer {
 					processedAt: new Date(),
 				});
 
-				this.eventsGateway.broadcastTicketUpdate(
-					data.ticketId,
-					updatedTicket.availableQuantity
-				);
+				// Auto-restock logic (For study purposes)
+				if (updatedTicket.availableQuantity === 0) {
+					this.logger.log(`Ticket ${data.ticketId} sold out. Restocking...`);
+					const [restockedTicket] = await tx
+						.update(ticket)
+						.set({
+							availableQuantity: ticket.totalQuantity,
+						})
+						.where(eq(ticket.id, data.ticketId))
+						.returning();
+
+					this.eventsGateway.broadcastTicketUpdate(
+						data.ticketId,
+						restockedTicket.availableQuantity
+					);
+				} else {
+					this.eventsGateway.broadcastTicketUpdate(
+						data.ticketId,
+						updatedTicket.availableQuantity
+					);
+				}
 
 				return { status: "COMPLETED", totalPrice };
 			});
