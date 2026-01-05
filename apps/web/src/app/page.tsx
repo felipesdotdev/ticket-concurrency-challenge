@@ -8,7 +8,6 @@ import {
 } from "framer-motion";
 import {
 	Activity,
-	Apple,
 	ArrowLeft,
 	Check,
 	ChevronRight,
@@ -16,6 +15,7 @@ import {
 	Minus,
 	Plus,
 	QrCode,
+	Trophy,
 	X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -31,32 +31,32 @@ import { useSocket } from "../providers/socket-provider";
 
 const TIERS = [
 	{
-		id: "ticket-experience",
-		name: "Experience",
+		id: "ticket-standard",
+		name: "Arquibancada Superior",
 		price: 490,
-		desc: "Acesso à pista global.",
-		features: ["Entrada Digital", "App Companion", "Foto Imersiva"],
+		desc: "Visão panorâmica do campo e torcida.",
+		features: ["Assento Numerado", "Acesso aos Bares", "Telão Gigante"],
 	},
 	{
-		id: "ticket-experience-pro",
-		name: "Experience Pro",
-		price: 990,
-		desc: "A visão definitiva.",
+		id: "ticket-vip",
+		name: "Camarote Lounge VIP",
+		price: 1500,
+		desc: "Experiência premium com open bar.",
 		features: [
-			"Fast Pass (Fila Expressa)",
-			"Acesso ao Lounge",
-			"Kit Merch Exclusivo",
-			"Meet & Greet Virtual",
+			"Open Bar & Food",
+			"Estacionamento VIP",
+			"Kit Torcedor",
+			"Acesso Exclusivo",
 		],
 		new: true,
 	},
 ];
 
 const TICKER_MESSAGES = [
-	"Alta demanda detectada na sua região.",
-	"Checkout seguro com criptografia ponta-a-ponta.",
-	"Limite de 5 ingressos por CPF.",
-	"Estoque atualizado em tempo real.",
+	"Últimos ingressos para a Grande Final.",
+	"Checkout seguro com criptografia bancária.",
+	"Limite de 4 ingressos por torcedor.",
+	"Disponibilidade atualizada em tempo real.",
 ];
 
 // Apple Physics Refined
@@ -79,7 +79,7 @@ const STEP_ORDER = {
 export default function App() {
 	// System State
 	const { lastEvent, userId } = useSocket();
-	const [selectedTier, setSelectedTier] = useState("ticket-experience-pro");
+	const [selectedTier, setSelectedTier] = useState("ticket-vip");
 	const [quantity, setQuantity] = useState(1);
 	const [stock, setStock] = useState(0); // Start with 0, wait for server update
 	const [logs, setLogs] = useState<
@@ -123,11 +123,12 @@ export default function App() {
 	useEffect(() => {
 		if (lastEvent?.type === "TICKET_UPDATE") {
 			const { ticketId, quantity: newQuantity } = lastEvent.data;
-			if (ticketId === "ticket-experience-pro") {
+			// Atualiza apenas se for o tier selecionado ou se quisermos mostrar todos
+			if (ticketId === selectedTier) {
 				setStock(newQuantity);
 			}
 		}
-	}, [lastEvent]);
+	}, [lastEvent, selectedTier]);
 
 	// Real-time Order Updates
 	useEffect(() => {
@@ -246,10 +247,10 @@ export default function App() {
 				<div className="flex w-full max-w-[1024px] items-center justify-between px-6">
 					{/* Left: Brand */}
 					<div className="flex items-center gap-6">
-						<Apple className="h-4 w-4 text-[#E8E8ED]" fill="currentColor" />
+						<Trophy className="h-4 w-4 text-[#E8E8ED]" fill="currentColor" />
 						<div className="hidden gap-6 text-[#E8E8ED] tracking-wide sm:flex">
 							<span className="cursor-pointer transition-colors hover:text-white">
-								Shows
+								Jogos
 							</span>
 							<span className="cursor-pointer transition-colors hover:text-white">
 								Esportes
@@ -304,7 +305,7 @@ export default function App() {
 			>
 				<div className="mx-auto flex h-full max-w-[1024px] items-center justify-between px-6">
 					<h2 className="font-semibold text-[21px] tracking-tight">
-						Verve <span className="opacity-50">Pro</span>
+						Crowd<span className="opacity-50">Pass</span>
 					</h2>
 					<motion.button
 						className="min-w-[60px] rounded-full bg-[#0071E3] px-4 py-1 font-medium text-[12px] text-white"
@@ -329,13 +330,13 @@ export default function App() {
 					transition={{ duration: 0.8 }}
 				>
 					<span className="mb-2 block font-semibold text-[#bf4800] text-[17px] tracking-tight">
-						Nova Temporada
+						Grande Final 2026
 					</span>
 					<h1 className="mb-2 font-semibold text-[#1d1d1f] text-[56px] leading-[1.05] tracking-tighter md:text-[80px]">
-						Verve Pro.
+						CrowdPass.
 					</h1>
 					<p className="font-medium text-[#1d1d1f] text-[24px] leading-tight tracking-tight md:text-[28px]">
-						Simplesmente Pro.
+						O Maior Espetáculo da Terra.
 					</p>
 				</motion.div>
 
@@ -345,16 +346,16 @@ export default function App() {
 				>
 					<motion.div
 						animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
-						className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop')] bg-center bg-cover opacity-60"
+						className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop')] bg-center bg-cover opacity-80"
 						transition={{
-							duration: 20,
+							duration: 30,
 							repeat: Number.POSITIVE_INFINITY,
 							repeatType: "mirror",
 						}}
 					/>
 					<div className="absolute inset-0 flex items-center justify-center">
-						<span className="font-semibold text-3xl text-white tracking-tight mix-blend-overlay md:text-5xl">
-							Live Experience
+						<span className="font-semibold text-3xl text-white tracking-tight drop-shadow-2xl md:text-5xl">
+							Estádio Monumental
 						</span>
 					</div>
 				</motion.div>
@@ -369,7 +370,7 @@ export default function App() {
 					{/* LEFT: Info & Logs */}
 					<div className="space-y-8 self-start md:sticky md:top-32">
 						<h3 className="mb-4 font-semibold text-[#1d1d1f] text-[40px] leading-[1.05] tracking-tight">
-							Personalize seu acesso.
+							Garanta seu lugar.
 						</h3>
 
 						{/* Estoque */}
@@ -767,8 +768,8 @@ export default function App() {
 							Detalhes do Evento
 						</span>
 						<ul className="space-y-1">
-							<li>Data: 12 Dez, 2026</li>
-							<li>Local: Apple Park Visitor Center</li>
+							<li>Data: 15 Julho, 2026</li>
+							<li>Local: Estádio Monumental</li>
 						</ul>
 					</div>
 				</div>

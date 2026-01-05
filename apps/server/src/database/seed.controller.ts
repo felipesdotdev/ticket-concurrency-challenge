@@ -22,40 +22,40 @@ export class SeedController {
 		const eventId = "event-id-123";
 		await this.dbConnection.insert(event).values({
 			id: eventId,
-			name: "Show do Alok",
-			description: "Grande show na arena",
-			venue: "Arena Central",
-			eventDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+			name: "Final da Copa do Mundo 2026",
+			description: "A disputa pela taça mais cobiçada do futebol mundial.",
+			venue: "Estádio Monumental",
+			eventDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days from now
 		});
 
-		const ticketExperienceId = "ticket-experience";
+		const ticketStandardId = "ticket-standard";
 		await this.dbConnection.insert(ticket).values({
-			id: ticketExperienceId,
+			id: ticketStandardId,
 			eventId,
-			name: "Verve Experience",
-			description: "Acesso à pista global.",
-			price: 49_000, // em centavos
-			totalQuantity: 1000,
-			availableQuantity: 1000,
+			name: "Arquibancada Superior",
+			description: "Visão panorâmica do campo e torcida.",
+			price: 49_000, // em centavos (R$ 490,00)
+			totalQuantity: 40_000,
+			availableQuantity: 40_000,
 		});
 
-		const ticketProId = "ticket-experience-pro";
+		const ticketVipId = "ticket-vip";
 		await this.dbConnection.insert(ticket).values({
-			id: ticketProId,
+			id: ticketVipId,
 			eventId,
-			name: "Verve Experience Pro",
-			description: "A visão definitiva.",
-			price: 99_000, // em centavos
-			totalQuantity: 500,
-			availableQuantity: 500,
+			name: "Camarote Lounge VIP",
+			description: "Experiência premium com open bar e food.",
+			price: 150_000, // em centavos (R$ 1.500,00)
+			totalQuantity: 10_000,
+			availableQuantity: 10_000,
 		});
 
 		return {
 			message: "Database seeded successfully",
 			userId,
 			eventId,
-			ticketExperienceId,
-			ticketProId,
+			ticketStandardId,
+			ticketVipId,
 		};
 	}
 }
