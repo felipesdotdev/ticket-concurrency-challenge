@@ -1,6 +1,6 @@
-import { randomUUID } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 import type Redis from "ioredis";
+import { randomUUID } from "node:crypto";
 import { REDIS_CLIENT } from "./redis.constants";
 
 @Injectable()
@@ -30,7 +30,6 @@ export class RedisService {
 	}
 
 	async releaseLock(key: string, token: string): Promise<boolean> {
-		// Lua script to atomically check ownership and delete
 		const script = `
 			if redis.call("get", KEYS[1]) == ARGV[1] then
 				return redis.call("del", KEYS[1])

@@ -33,7 +33,6 @@ const IOS_SPRING = {
 } as const;
 const IOS_EASE = [0.19, 1, 0.22, 1] as const;
 
-// Variants para Transição de Tela (Com Blur e Direção)
 const screenVariants = {
 	enter: (direction: number) => ({
 		x: direction > 0 ? 50 : -50,
@@ -69,7 +68,6 @@ export function CheckoutModal({
 		<AnimatePresence>
 			{isOpen && (
 				<>
-					{/* Backdrop */}
 					<motion.div
 						animate={{ opacity: 1 }}
 						className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 p-4 backdrop-blur-sm"
@@ -77,7 +75,6 @@ export function CheckoutModal({
 						initial={{ opacity: 0 }}
 						onClick={onClose}
 					>
-						{/* Modal Container */}
 						<motion.div
 							animate={{ scale: 1, opacity: 1 }}
 							className="relative mx-auto w-full max-w-md overflow-hidden rounded-[24px] bg-white shadow-[0_40px_80px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
@@ -93,7 +90,6 @@ export function CheckoutModal({
 								layout
 								transition={{ duration: 0.4, ease: IOS_EASE }}
 							>
-								{/* Header */}
 								<div className="mb-6 flex items-center justify-between">
 									<div className="flex items-center gap-2">
 										{step !== "method" && step !== "success" && (
@@ -119,7 +115,6 @@ export function CheckoutModal({
 									</button>
 								</div>
 
-								{/* Content */}
 								<div className="relative min-h-[200px] overflow-hidden">
 									<AnimatePresence custom={direction} mode="popLayout">
 										{step === "method" && (

@@ -1,5 +1,3 @@
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import type { MicroserviceOptions } from "@nestjs/microservices";
@@ -8,6 +6,8 @@ import {
 	FastifyAdapter,
 	type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { AppModule } from "./app.module";
 import { FastifySocketIoAdapter } from "./common/adapters/fastify-socket.adapter";
 
@@ -37,7 +37,7 @@ async function bootstrap() {
 				deadLetterExchange: "",
 				deadLetterRoutingKey: "ticket_orders_dlq",
 			},
-			prefetchCount: 10, // Limit concurrent message processing for throttling
+			prefetchCount: 10,
 			noAck: false,
 		},
 	});

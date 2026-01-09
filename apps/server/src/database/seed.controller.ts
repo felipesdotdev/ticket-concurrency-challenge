@@ -25,7 +25,7 @@ export class SeedController {
 			name: "Final da Copa do Mundo 2026",
 			description: "A disputa pela taça mais cobiçada do futebol mundial.",
 			venue: "Estádio Monumental",
-			eventDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days from now
+			eventDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
 		});
 
 		const ticketStandardId = "ticket-standard";
@@ -34,7 +34,7 @@ export class SeedController {
 			eventId,
 			name: "Arquibancada Superior",
 			description: "Visão panorâmica do campo e torcida.",
-			price: 49_000, // em centavos (R$ 490,00)
+			price: 49_000,
 			totalQuantity: 40_000,
 			availableQuantity: 40_000,
 		});
@@ -45,7 +45,7 @@ export class SeedController {
 			eventId,
 			name: "Camarote Lounge VIP",
 			description: "Experiência premium com open bar e food.",
-			price: 150_000, // em centavos (R$ 1.500,00)
+			price: 150_000,
 			totalQuantity: 10_000,
 			availableQuantity: 10_000,
 		});

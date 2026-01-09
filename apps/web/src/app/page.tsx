@@ -17,13 +17,6 @@ import { TicketGrid } from "../components/landing/ticket-grid";
 import { getTickets, purchaseTicket } from "../lib/api";
 import { useSocket } from "../providers/socket-provider";
 
-/**
- * @name TicketStormCupertinoPaymentRefined
- * @description Sistema com animações de navegação bidirecional (Push/Pop) estilo iOS.
- * - Traduzido para Português do Brasil.
- * - Refatorado para melhor manutenibilidade.
- */
-
 const TIERS_SKELETON = [
 	{
 		id: "skeleton-1",
@@ -43,7 +36,6 @@ const STEP_ORDER = {
 };
 
 export default function App() {
-	// System State
 	const { lastEvent, userId } = useSocket();
 	const [tiers, setTiers] = useState<any[]>(TIERS_SKELETON);
 	const [selectedTier, setSelectedTier] = useState<string | null>(null);
@@ -61,7 +53,6 @@ export default function App() {
 	const [direction, setDirection] = useState(0); // -1 (back), 1 (forward)
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
 
-	// Initial Data Fetch
 	useEffect(() => {
 		getTickets()
 			.then((data) => {
@@ -84,12 +75,10 @@ export default function App() {
 			.catch((err) => console.error("Failed to fetch tickets", err));
 	}, []);
 
-	// Real-time Ticket Updates
 	useEffect(() => {
 		if (lastEvent?.type === "TICKET_UPDATE") {
 			const { ticketId, availableQuantity: newQuantity } = lastEvent.data;
 
-			// Add to logs
 			setLogs((prev) =>
 				[
 					{
@@ -101,17 +90,14 @@ export default function App() {
 				].slice(0, 5)
 			);
 
-			// Update local state for immediate feedback
 			setTiers((prev) =>
 				prev.map((t) =>
 					t.id === ticketId ? { ...t, availableQuantity: newQuantity } : t
 				)
 			);
 
-			// Update large stock number if it's the selected tier
 			if (ticketId === selectedTier) {
 				setStock(newQuantity);
-				// Auto-adjust quantity if it exceeds new stock
 				if (quantity > newQuantity) {
 					setQuantity(Math.max(1, newQuantity));
 				}
@@ -119,7 +105,6 @@ export default function App() {
 		}
 	}, [lastEvent, selectedTier, quantity]);
 
-	// Update stock when selection changes
 	useEffect(() => {
 		if (selectedTier) {
 			const t = tiers.find((tier) => tier.id === selectedTier);
@@ -130,7 +115,6 @@ export default function App() {
 		}
 	}, [selectedTier, tiers]);
 
-	// Navigation Helper
 	const navigateTo = (newStep: ModalStep) => {
 		const newIndex = STEP_ORDER[newStep];
 		const oldIndex = STEP_ORDER[modalStep];
@@ -147,7 +131,6 @@ export default function App() {
 		}, 300);
 	};
 
-	// Real-time Order Updates - Action Handler
 	useEffect(() => {
 		if (lastEvent?.type === "ORDER_UPDATE" && currentOrderId) {
 			const { orderId, status, message } = lastEvent.data;

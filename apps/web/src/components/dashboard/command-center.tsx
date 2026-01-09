@@ -23,7 +23,7 @@ export function CommandCenter({
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
-						"Idempotency-Key": idempotencyKey, // Send as header per backend requirement
+						"Idempotency-Key": idempotencyKey,
 					},
 					body: JSON.stringify({
 						userId,

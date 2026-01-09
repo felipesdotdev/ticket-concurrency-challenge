@@ -8,7 +8,7 @@ import { RedisService } from "../infrastructure/redis/redis.service";
 import type { OrderMessage } from "./order.service";
 
 const MAX_RETRIES = 3;
-const RETRY_KEY_TTL = 60 * 60; // 1 hour
+const RETRY_KEY_TTL = 60 * 60;
 
 @Controller()
 export class OrderConsumer {
@@ -67,7 +67,6 @@ export class OrderConsumer {
 					this.logger.error(
 						`Max retries (${MAX_RETRIES}) exceeded for order ${data.orderId}, sending to DLQ`
 					);
-					// nack without requeue sends to DLQ
 					channel.nack(originalMsg, false, false);
 					return;
 				}
@@ -79,7 +78,6 @@ export class OrderConsumer {
 				return;
 			}
 
-			// For any other unexpected errors (DB, etc.), send to DLQ immediately for safety
 			this.logger.error(
 				`Sending order ${data.orderId} to DLQ due to unexpected error`
 			);
@@ -105,10 +103,7 @@ export class OrderConsumer {
 		}
 
 		try {
-			// Use transaction to ensure detailed consistency
 			return await this.dbConnection.transaction(async (tx) => {
-				// Atomic update: decrement stock only if sufficient quantity exists
-				// This single query prevents race conditions at the database level
 				const [updatedTicket] = await tx
 					.update(ticket)
 					.set({
@@ -122,7 +117,6 @@ export class OrderConsumer {
 					)
 					.returning();
 
-				// If no row was updated, either ticket doesn't exist or insufficient stock
 				if (!updatedTicket) {
 					const [existingTicket] = await tx
 						.select({ id: ticket.id })
@@ -159,7 +153,6 @@ export class OrderConsumer {
 					processedAt: new Date(),
 				});
 
-				// Auto-restock logic (For study purposes)
 				if (updatedTicket.availableQuantity === 0) {
 					this.logger.log(`Ticket ${data.ticketId} sold out. Restocking...`);
 					const [restockedTicket] = await tx

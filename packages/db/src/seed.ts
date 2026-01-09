@@ -15,14 +15,10 @@ const db = drizzle(client);
 
 async function seed() {
 	console.log("🌱 Starting database seed...");
-
-	// Clear existing data
 	console.log("🧹 Clearing existing data...");
 	await db.execute(
 		sql`TRUNCATE TABLE "order", "ticket", "event", "user" CASCADE`
 	);
-
-	// Create user
 	const userId = randomUUID();
 	console.log(`👤 Creating user: ${userId}`);
 	await db.insert(user).values({
@@ -30,8 +26,6 @@ async function seed() {
 		name: "Test User",
 		email: "test@example.com",
 	});
-
-	// Create event
 	const eventId = randomUUID();
 	console.log(`🎉 Creating event: ${eventId}`);
 	await db.insert(event).values({
@@ -39,7 +33,7 @@ async function seed() {
 		name: "Final da Copa do Mundo 2026",
 		description: "A disputa pela taça mais cobiçada do futebol mundial.",
 		venue: "Estádio Monumental",
-		eventDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days from now
+		eventDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
 	});
 
 	// Create standard ticket
@@ -50,7 +44,7 @@ async function seed() {
 		eventId,
 		name: "Arquibancada Superior",
 		description: "Visão panorâmica do campo e torcida.",
-		price: 49_000, // R$ 490,00
+		price: 49_000,
 		totalQuantity: 40_000,
 		availableQuantity: 40_000,
 	});
@@ -63,7 +57,7 @@ async function seed() {
 		eventId,
 		name: "Camarote Lounge VIP",
 		description: "Experiência premium com open bar e food.",
-		price: 150_000, // R$ 1.500,00
+		price: 150_000,
 		totalQuantity: 10_000,
 		availableQuantity: 10_000,
 	});
@@ -74,8 +68,6 @@ async function seed() {
 	console.log(`   Event: ${eventId}`);
 	console.log(`   Standard Ticket: ${ticketStandardId}`);
 	console.log(`   VIP Ticket: ${ticketVipId}`);
-
-	// Close connection
 	await client.end();
 	process.exit(0);
 }

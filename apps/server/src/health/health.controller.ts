@@ -33,7 +33,6 @@ export class HealthController {
 
 	@Get("live")
 	live() {
-		// Liveness probe - always returns OK if the server is running
 		return { status: "up", timestamp: new Date().toISOString() };
 	}
 

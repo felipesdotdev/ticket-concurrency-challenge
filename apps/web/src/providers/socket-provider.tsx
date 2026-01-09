@@ -42,7 +42,6 @@ export function SocketProvider({
 	);
 
 	useEffect(() => {
-		// Initialize userId
 		let currentUserId = userId;
 		if (!currentUserId) {
 			const storedId = localStorage.getItem("ticket-app-user-id");
@@ -55,7 +54,6 @@ export function SocketProvider({
 		}
 		setActiveUserId(currentUserId);
 
-		// Connect to the API server URL
 		const socketInstance = io(
 			process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000",
 			{
@@ -72,7 +70,6 @@ export function SocketProvider({
 			setIsConnected(false);
 		});
 
-		// Listen for global broadcast events
 		socketInstance.on("ticket:update", (data) => {
 			setLastEvent({
 				type: "TICKET_UPDATE",
@@ -95,8 +92,6 @@ export function SocketProvider({
 			socketInstance.disconnect();
 		};
 	}, [userId]);
-
-	// Expose userId in context (we need to update the interface first, doing it in next step)
 
 	return (
 		<SocketContext.Provider

@@ -1,8 +1,8 @@
 "use client";
 
+import { useSocket } from "@/providers/socket-provider";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { useSocket } from "@/providers/socket-provider";
 
 export function StatMonitor({ ticketId }: { ticketId: string }) {
 	const { lastEvent } = useSocket();
@@ -17,9 +17,7 @@ export function StatMonitor({ ticketId }: { ticketId: string }) {
 		}
 	}, [lastEvent, ticketId]);
 
-	// Fetch initial stock (simulated for now, ideally API call)
 	useEffect(() => {
-		// Temporary: simulate initial fetch or get from props if passed
 		if (stock === null) setStock(100);
 	}, []);
 

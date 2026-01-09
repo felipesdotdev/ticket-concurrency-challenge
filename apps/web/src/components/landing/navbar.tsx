@@ -26,7 +26,6 @@ export function Navbar() {
 	return (
 		<nav className="relative z-50 flex h-[44px] items-center justify-center overflow-hidden bg-[#161617] font-normal text-[#E8E8ED]/80 text-[12px]">
 			<div className="flex w-full max-w-[1024px] items-center justify-between px-6">
-				{/* Left: Brand */}
 				<div className="flex items-center gap-6">
 					<Trophy className="h-4 w-4 text-[#E8E8ED]" fill="currentColor" />
 					<div className="hidden gap-6 text-[#E8E8ED] tracking-wide sm:flex">
@@ -47,8 +46,6 @@ export function Navbar() {
 						</span>
 					</div>
 				</div>
-
-				{/* Center: Animated Ticker */}
 				<div className="absolute left-1/2 hidden w-[280px] -translate-x-1/2 text-center md:block">
 					<AnimatePresence mode="wait">
 						<motion.span
@@ -63,8 +60,6 @@ export function Navbar() {
 						</motion.span>
 					</AnimatePresence>
 				</div>
-
-				{/* Right: Support */}
 				<div className="flex items-center gap-6">
 					<span className="cursor-pointer text-[11px] transition-colors hover:text-white">
 						Suporte

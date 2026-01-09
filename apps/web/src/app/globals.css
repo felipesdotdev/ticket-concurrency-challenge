@@ -48,19 +48,14 @@
 }
 
 :root {
-	/* Vibrant Light Theme - Though we are aiming for dark as primary, defining light just in case */
 	--background: oklch(0.98 0.01 240);
 	--foreground: oklch(0.14 0.05 240);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.14 0.05 240);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.14 0.05 240);
-
-	/* Primary: Electric Cyan/Blue */
 	--primary: oklch(0.65 0.2 230);
 	--primary-foreground: oklch(0.98 0 0);
-
-	/* Secondary: Soft Lavender */
 	--secondary: oklch(0.92 0.05 280);
 	--secondary-foreground: oklch(0.3 0.1 280);
 
@@ -88,8 +83,7 @@
 }
 
 .dark {
-	/* Deep Atmospheric Backgrounds */
-	--background: oklch(0.12 0.03 240); /* Deep Blue-Black */
+	--background: oklch(0.12 0.03 240);
 	--foreground: oklch(0.98 0.01 240);
 
 	--card: oklch(0.18 0.04 240);
@@ -98,11 +92,10 @@
 	--popover: oklch(0.18 0.04 240);
 	--popover-foreground: oklch(0.98 0.01 240);
 
-	/* Vibrant Accents */
-	--primary: oklch(0.7 0.15 200); /* Cyan */
+	--primary: oklch(0.7 0.15 200);
 	--primary-foreground: oklch(0.12 0.03 240);
 
-	--secondary: oklch(0.3 0.1 280); /* Deep Purple */
+	--secondary: oklch(0.3 0.1 280);
 	--secondary-foreground: oklch(0.98 0.01 240);
 
 	--muted: oklch(0.2 0.03 240);
@@ -117,7 +110,7 @@
 	--input: oklch(1 0 0 / 15%);
 	--ring: oklch(0.7 0.15 200);
 
-	--sidebar: oklch(0.1 0.03 240); /* Slightly darker than bg */
+	--sidebar: oklch(0.1 0.03 240);
 	--sidebar-foreground: oklch(0.98 0.01 240);
 	--sidebar-primary: oklch(0.7 0.15 200);
 	--sidebar-primary-foreground: oklch(0.12 0.03 240);
@@ -146,7 +139,7 @@
 
 	/* Super-ellipse approximation for a more tailored feel without mask if needed */
 	.rounded-squircle {
-		border-radius: 22px; /* Smooth corner */
+		border-radius: 22px;
 	}
 
 	.glass {

@@ -26,7 +26,6 @@ export function StockMonitor({
 				Garanta seu lugar.
 			</h3>
 
-			{/* Stock Bar */}
 			<div className="border-[#d2d2d7]/50 border-b pt-8 pb-8">
 				<div className="mb-2 flex items-center justify-between">
 					<span className="font-semibold text-[#1d1d1f] text-[14px]">
@@ -47,7 +46,6 @@ export function StockMonitor({
 				</div>
 			</div>
 
-			{/* Live Logs */}
 			<div className="pt-6">
 				<h4 className="mb-4 font-semibold text-[#86868b] text-[12px] uppercase tracking-wider">
 					Atualizações em Tempo Real

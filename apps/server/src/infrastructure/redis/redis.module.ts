@@ -7,7 +7,7 @@ const redisProvider: Provider = {
 	provide: REDIS_CLIENT,
 	useFactory: () => {
 		const commonOptions = {
-			maxRetriesPerRequest: null, // Importante para não quebrar o app se o Redis oscilar
+			maxRetriesPerRequest: null,
 			reconnectOnError: (err: Error) => {
 				const targetError = "READONLY";
 				if (err.message.includes(targetError)) {

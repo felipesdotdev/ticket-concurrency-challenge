@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useSocket } from "@/providers/socket-provider";
+import { useEffect, useRef, useState } from "react";
 
 interface LogEntry {
 	id: string;
@@ -17,7 +17,7 @@ export function EventLog() {
 
 	const addLog = (type: LogEntry["type"], message: string) => {
 		setLogs((prev) => [
-			...prev.slice(-49), // Keep last 50 logs
+			...prev.slice(-49),
 			{
 				id: crypto.randomUUID(),
 				timestamp: new Date().toLocaleTimeString(),

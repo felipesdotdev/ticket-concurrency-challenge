@@ -3,7 +3,6 @@ import type { PropsWithChildren } from "react";
 export function LayoutShell({ children }: PropsWithChildren) {
 	return (
 		<div className="min-h-screen overflow-hidden bg-[#0a0a0a] font-mono text-[#00ff41] selection:bg-[#003b00] selection:text-[#00ff41]">
-			{/* Grid Background Effect */}
 			<div
 				className="pointer-events-none fixed inset-0 z-0 opacity-20"
 				style={{
@@ -14,8 +13,6 @@ export function LayoutShell({ children }: PropsWithChildren) {
 					backgroundSize: "40px 40px",
 				}}
 			/>
-
-			{/* Scanline Effect */}
 			<div className="pointer-events-none fixed inset-0 z-50 h-[100px] w-full animate-scanline bg-gradient-to-b from-transparent via-white to-transparent opacity-[0.03]" />
 
 			<div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col p-6">
