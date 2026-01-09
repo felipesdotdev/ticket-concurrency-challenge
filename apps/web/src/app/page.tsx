@@ -49,6 +49,7 @@ export default function App() {
 	const [selectedTier, setSelectedTier] = useState<string | null>(null);
 	const [quantity, setQuantity] = useState(1);
 	const [stock, setStock] = useState(0);
+	const [totalStock, setTotalStock] = useState(0);
 	const [logs, setLogs] = useState<
 		{ id: number; text: string; time: string }[]
 	>([]);
@@ -71,11 +72,13 @@ export default function App() {
 					desc: t.description,
 					features: ["Ingresso Oficial", "Acesso Garantido"],
 					availableQuantity: t.availableQuantity,
+					totalQuantity: t.totalQuantity,
 				}));
 				setTiers(formatted);
 				if (formatted.length > 0) {
 					setSelectedTier(formatted[0].id);
 					setStock(formatted[0].availableQuantity);
+					setTotalStock(formatted[0].totalQuantity);
 				}
 			})
 			.catch((err) => console.error("Failed to fetch tickets", err));
@@ -122,6 +125,7 @@ export default function App() {
 			const t = tiers.find((tier) => tier.id === selectedTier);
 			if (t && typeof t.availableQuantity === "number") {
 				setStock(t.availableQuantity);
+				setTotalStock(t.totalQuantity);
 			}
 		}
 	}, [selectedTier, tiers]);
@@ -224,7 +228,7 @@ export default function App() {
 				id="configurator"
 			>
 				<div className="mx-auto grid max-w-[1024px] grid-cols-1 items-start gap-16 px-6 md:grid-cols-2">
-					<StockMonitor logs={logs} stock={stock} />
+					<StockMonitor logs={logs} stock={stock} totalStock={totalStock} />
 
 					<div className="space-y-8">
 						<TicketGrid
