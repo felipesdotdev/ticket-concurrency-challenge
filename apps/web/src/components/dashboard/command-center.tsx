@@ -17,18 +17,21 @@ export function CommandCenter({
 		setIsLoading(true);
 		try {
 			const idempotencyKey = crypto.randomUUID();
-			const res = await fetch("http://localhost:3000/orders", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"Idempotency-Key": idempotencyKey, // Send as header per backend requirement
-				},
-				body: JSON.stringify({
-					userId,
-					ticketId,
-					quantity: 1,
-				}),
-			});
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000"}/orders`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Idempotency-Key": idempotencyKey, // Send as header per backend requirement
+					},
+					body: JSON.stringify({
+						userId,
+						ticketId,
+						quantity: 1,
+					}),
+				}
+			);
 
 			if (!res.ok) throw new Error("Command failed");
 

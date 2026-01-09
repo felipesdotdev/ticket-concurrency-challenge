@@ -56,10 +56,13 @@ export function SocketProvider({
 		setActiveUserId(currentUserId);
 
 		// Connect to the API server URL
-		const socketInstance = io("http://localhost:3000", {
-			transports: ["websocket"],
-			query: { userId: currentUserId },
-		});
+		const socketInstance = io(
+			process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000",
+			{
+				transports: ["websocket"],
+				query: { userId: currentUserId },
+			}
+		);
 
 		socketInstance.on("connect", () => {
 			setIsConnected(true);
