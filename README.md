@@ -19,70 +19,46 @@
 ## 🏗️ Arquitetura do Sistema
 
 ```mermaid
-flowchart TB
-    subgraph Client["🖥️ CLIENT"]
-        UI["Next.js + Socket.io"]
+graph TD
+    User([👤 User / Client])
+    
+    subgraph API_Layer [⚡ API Gateway]
+        API[POST /orders]
+        Redis_Idem[(Redis Cache<br/>Idempotency)]
+    end
+    
+    subgraph Async_Layer [📬 Message Broker]
+        Queue[RabbitMQ<br/>Queue: ticket_orders]
+    end
+    
+    subgraph Worker_Layer [⚙️ Worker Service]
+        Consumer[Order Consumer]
+        Redis_Lock[(Redis Lock<br/>Concurrency)]
+        DB[(PostgreSQL)]
+        Socket[WebSocket Gateway]
     end
 
-    subgraph API["⚡ API GATEWAY (NestJS/Fastify)"]
-        Controller["POST /orders"]
-        Interceptor["IdempotencyInterceptor"]
-        Service["OrderService"]
-        
-        Controller --> Interceptor
-        Interceptor -->|"Valida UUID"| Redis1[("Redis<br/>Verifica duplicatas")]
-        Interceptor -->|"Adquire Lock"| Redis1
-        Interceptor --> Service
-    end
-
-    subgraph Queue["📬 MESSAGE BROKER"]
-        RabbitMQ[["RabbitMQ<br/>Queue: ticket_orders"]]
-    end
-
-    subgraph Worker["⚙️ WORKER (OrderConsumer)"]
-        Consumer["Consumer"]
-        Lock["Adquire Lock por ticketId"]
-        Transaction["Transação PostgreSQL"]
-        Notify["Notifica via WebSocket"]
-        
-        Consumer --> Lock
-        Lock --> Redis2[("Redis<br/>Distributed Lock")]
-        Lock --> Transaction
-        Transaction --> DB[("PostgreSQL<br/>Orders + Tickets")]
-        Transaction --> Notify
-    end
-
-    subgraph Gateway["🔔 WEBSOCKET GATEWAY"]
-        Events["EventsGateway"]
-        OrderUpdate["order:update"]
-        TicketUpdate["ticket:update"]
-        
-        Events --> OrderUpdate
-        Events --> TicketUpdate
-    end
-
-    UI -->|"1. POST + Idempotency-Key"| Controller
-    Service -->|"2. emit()"| RabbitMQ
-    Service -->|"3. 202 Accepted"| UI
-    RabbitMQ -->|"4. Consume"| Consumer
-    Notify --> Events
-    OrderUpdate -->|"5. Push (< 2s)"| UI
-    TicketUpdate -->|"Broadcast"| UI
-
-    style Client fill:#1a1a2e,stroke:#16213e,color:#eee
-    style API fill:#0f3460,stroke:#16213e,color:#eee
-    style Queue fill:#e94560,stroke:#16213e,color:#fff
-    style Worker fill:#533483,stroke:#16213e,color:#eee
-    style Gateway fill:#1a1a2e,stroke:#16213e,color:#eee
+    %% Flow
+    User -->|1. Request| API
+    API -->|Validate| Redis_Idem
+    API -->|2. Publish| Queue
+    API -.->|202 Accepted| User
+    
+    Queue -->|3. Consume| Consumer
+    Consumer -->|Acquire Lock| Redis_Lock
+    Consumer -->|4. Process| DB
+    
+    DB -->|5. Notify| Socket
+    Socket -.->|6. Push Update| User
 ```
 
-### Fluxo Resumido
+### Fluxo de Processamento
 
-1. **Cliente** envia `POST /orders` com header `Idempotency-Key`
-2. **API** valida, verifica duplicatas no Redis e publica na fila
-3. **Cliente** recebe `202 Accepted` imediatamente
-4. **Worker** consome a fila, processa com lock distribuído
-5. **WebSocket** notifica o cliente em tempo real (< 2 segundos)
+1. **API Gateway**: Recebe a requisição, valida a chave de idempotência no Redis e enfileira o pedido. Retorna sucesso imediato ao cliente.
+2. **RabbitMQ**: Absorve os picos de tráfego, garantindo que o banco de dados não seja sobrecarregado.
+3. **Worker**: Consome as mensagens de forma controlada.
+4. **Resistência**: Usa **Redis Locks** para garantir que apenas um processo mude o estoque de um ingresso por vez (evitando *overselling*).
+5. **Notificação**: Assim que o processamento termina (sucesso ou falha), o cliente é avisado via WebSocket.
 
 ---
 
@@ -330,9 +306,3 @@ Como a compra é assíncrona, o usuário não pode ficar sem resposta.
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-<p align="center">
-  Feito com ☕ e muita concorrência
-</p>
