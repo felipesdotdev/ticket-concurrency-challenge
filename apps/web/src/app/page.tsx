@@ -139,7 +139,7 @@ export default function App() {
 				if (status === "COMPLETED") {
 					navigateTo("success");
 					toast.custom(
-						(t) => (
+						(_t) => (
 							<div className="flex w-[350px] items-center gap-4 rounded-2xl border border-white/20 bg-white/80 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl">
 								<div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#34C759] text-white shadow-sm">
 									<Check className="h-5 w-5" />

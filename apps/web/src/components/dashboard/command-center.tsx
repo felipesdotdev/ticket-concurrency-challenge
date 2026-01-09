@@ -37,7 +37,7 @@ export function CommandCenter({
 
 			const data = await res.json();
 			toast.success(`COMMAND SENT: ${data.message}`);
-		} catch (error) {
+		} catch {
 			toast.error("COMMAND EXECUTION FAILED");
 		} finally {
 			setIsLoading(false);

@@ -8,7 +8,7 @@ export class FastifySocketIoAdapter extends IoAdapter {
 	}
 
 	createIOServer(port: number, options?: ServerOptions) {
-		const server = this.app.getHttpServer();
+		// HTTP server is managed internally by NestJS; we only need to configure socket.io options
 		const io = super.createIOServer(port, {
 			...options,
 			cors: {
