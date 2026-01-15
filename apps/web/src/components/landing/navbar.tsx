@@ -1,7 +1,10 @@
 "use client";
 
+import { Github } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trophy } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const TICKER_MESSAGES = [
@@ -61,9 +64,12 @@ export function Navbar() {
 					</AnimatePresence>
 				</div>
 				<div className="flex items-center gap-6">
-					<span className="cursor-pointer text-[11px] transition-colors hover:text-white">
-						Suporte
-					</span>
+					<Link
+						className="inline-flex cursor-pointer items-center gap-1 text-[11px] transition-colors hover:text-white"
+						href="https://github.com/felipesdotdev/ticket-concurrency-challenge"
+					>
+						<HugeiconsIcon icon={Github} size={12} strokeWidth={2} /> GitHub
+					</Link>
 				</div>
 			</div>
 		</nav>
